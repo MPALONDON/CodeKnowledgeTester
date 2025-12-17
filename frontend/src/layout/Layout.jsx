@@ -1,12 +1,13 @@
 import "react";
 import {SignedIn,SignedOut,UserButton} from "@clerk/clerk-react";
 import {Outlet, Link, Navigate} from "react-router-dom";
+import style from "./layout.module.css";
 
 export default function Layout(){
-    return <div className="app-layout">
-        <header className="app-header">
-            <div className="header-content">
-                <h1>Code Generator</h1>
+    return <div className={style.appLayout}>
+        <header className={style.appHeader}>
+            <div className={style.headerContent}>
+                <h1>Code Knowledge Tester</h1>
                 <nav>
                     <SignedIn>
                         <Link to="/">Generate Challenge</Link>
@@ -16,7 +17,7 @@ export default function Layout(){
                 </nav>
             </div>
         </header>
-        <main className="app-main">
+        <main className={style.appMain}>
             <SignedOut>
                 <Navigate to="/sign-in" replace/>
             </SignedOut>

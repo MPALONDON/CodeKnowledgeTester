@@ -1,5 +1,55 @@
 import "react";
+import {useState} from "react";
+import styles from "./challenge.module.css";
 
-export default function MCQChallenge(){
-    return <></>
+export default function MCQChallenge({challenge, showExplanation=false}){
+    const [selectedOption,setSelectedOption] = useState(null)
+    const [shouldShowExplanation, setShouldShowExplanation] = useState(shouldShowExplanation)
+
+    const options = typeof challenge.options === "string"
+        ? JSON.parse(challenge.options)
+        : challenge.options
+
+    const handleOptionSelect = (index) =>{
+        if (selectedOption !== null) return;
+        setSelectedOption(index)
+        setShouldShowExplanation(true)
+    }
+
+    const getOptionClass = (index) =>{
+        if(selectedOption === null) {
+            return "option"
+        }
+        if (index === challenge.correct_answer_id){
+            return "option correct"
+        }
+        if (selectedOption === index && index !== challenge.correct_answer_id){
+            return "option incorrect"
+        }
+        return "option"
+    }
+
+    return <div className={styles.challengeDisplay}>
+        <p><strong>Difficulty</strong>:{challenge.difficulty}</p>
+        <p className={styles.challengeTitle}>{challenge.title}</p>
+        <div className={styles.options}>
+            {options.map((option,index) =>(
+                <div
+                    className={getOptionClass(index)}
+                    key={index}
+                    onClick={() => handleOptionSelect(index)}
+                >
+                    {option}
+
+                </div>
+            ))}
+        </div>
+        {shouldShowExplanation && selectedOption !== null &&(
+            <div className="explanation">
+                <h4>Explanation</h4>
+                <p>{challenge.explanation}</p>
+
+            </div>
+        )}
+    </div>
 }
