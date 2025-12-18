@@ -1,10 +1,9 @@
 import "react";
 import {useState} from "react";
-import styles from "./challenge.module.css";
 
 export default function MCQChallenge({challenge, showExplanation=false}){
     const [selectedOption,setSelectedOption] = useState(null)
-    const [shouldShowExplanation, setShouldShowExplanation] = useState(shouldShowExplanation)
+    const [shouldShowExplanation, setShouldShowExplanation] = useState(showExplanation)
 
     const options = typeof challenge.options === "string"
         ? JSON.parse(challenge.options)
@@ -29,10 +28,10 @@ export default function MCQChallenge({challenge, showExplanation=false}){
         return "option"
     }
 
-    return <div className={styles.challengeDisplay}>
+    return <div className="challenge-display">
         <p><strong>Difficulty</strong>:{challenge.difficulty}</p>
-        <p className={styles.challengeTitle}>{challenge.title}</p>
-        <div className={styles.options}>
+        <p className="challenge-title">{challenge.title}</p>
+        <div className="options">
             {options.map((option,index) =>(
                 <div
                     className={getOptionClass(index)}

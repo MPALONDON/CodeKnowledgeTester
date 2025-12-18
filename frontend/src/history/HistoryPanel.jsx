@@ -1,9 +1,10 @@
 import "react";
 import {useState, useEffect, use} from "react";
 import MCQChallenge from "../challenge/MCQChallenge.jsx";
-import style from "./history.module.css";
+import {useApi} from "../utils/api.js";
 
 export default function HistoryPanel(){
+    const {makeRequest} = useApi();
     const [history, setHistory] = useState([])
     const [isLoading,setIsLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -13,25 +14,36 @@ export default function HistoryPanel(){
     },[])
 
     const fetchHistory = async () => {
-        setIsLoading(false)
+        setIsLoading(true)
+        setError(null)
+
+        try {
+            const data = await makeRequest("my-history")
+            setHistory(data.challenges)
+        } catch (err){
+            setError("Failed to load history")
+        } finally {
+            setIsLoading(false)
+
+        }
     }
 
     if (isLoading){
-        return <div className={style.loading}>Loading history...</div>
+        return <div className="loading">Loading history...</div>
     }
 
     if (error){
-        return <div className={style.errorMessage}>
+        return <div className="error-message">
             <p>{error}</p>
             <button onClick={fetchHistory}></button>
 
         </div>
     }
-    return <div className={style.historyPanel}>
+    return <div className="history-panel">
         <h2>History</h2>
         {history.length ===0 ? <p>No Challenge history</p>
             :
-            <div className={style.historyList}>
+            <div className="history-list">
                 {history.map((challenge)=>{
                     return <MCQChallenge
                         challenge={challenge}

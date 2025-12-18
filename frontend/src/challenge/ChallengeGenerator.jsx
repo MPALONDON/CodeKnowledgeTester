@@ -1,7 +1,7 @@
 import "react";
 import {useState, useEffect} from "react";
 import MCQChallenge from "./MCQChallenge.jsx";
-import styles from "./challenge.module.css";
+import {useApi} from "../utils/api.js"
 
 export default function ChallengeGenerator(){
     const [challenge,setChallenge] = useState(null);
@@ -9,24 +9,61 @@ export default function ChallengeGenerator(){
     const [error,setError] = useState(null)
     const [difficulty, setDifficulty] = useState("easy")
     const [quota, setQuota] = useState(null)
+    const {makeRequest} = useApi()
 
-    const fetchQuota = async() => {}
+    useEffect(()=>{
+        fetchQuota()
+    },[])
 
-    const generateChallenge = async() => {}
+    const fetchQuota = async() => {
+        try{
+            const data = await makeRequest("quota")
+            setQuota(data)
+        }catch (err){
+            console.log(err)
+        }
+    }
+
+    const generateChallenge = async() => {
+        setIsLoading(true)
+        setError(null)
+
+        try{
+            const data = await makeRequest("generate-challenge",{
+                method: "POST",
+                body: JSON.stringify({difficulty})
+                }
+            )
+            setChallenge(data)
+            fetchQuota()
+        }catch (err){
+            setError(err.message || "Failed to generate challenge")
+        }finally{
+            setIsLoading(false)
+        }
+    }
 
     function handleDifficulty(e){
         setDifficulty(e.target.value)
     }
 
-    const getNextResetTime = () => {}
-    return <div className={styles.challengeContainer}>
+    const getNextResetTime = () => {
+        if (!quota?.last_reset_data) return null
+        const resetDate = new Date(quota.last_reset_data)
+        resetDate.setHours(resetDate.getHours()+24)
+        return resetDate
+    }
+
+
+    return <div className="challenge-container">
         <h2>Challenge Generator</h2>
-        <div className={styles.quotaDisplay}></div>
+        <div className="quota-display">
         <p>Challenges remaining today: {quota?.quota_remaining || 0}</p>
         {quota?.quota_remaining === 0 && (
-            <p>Next reset: {0}</p>
+            <p>Next reset: {getNextResetTime()?.toLocaleString()}</p>
         )}
-        <div className={styles.difficultySelector}>
+            </div>
+        <div className="difficulty-selector">
             <label htmlFor="difficulty">Select Difficulty</label>
             <select id="difficulty"
                     value={difficulty}
@@ -39,12 +76,12 @@ export default function ChallengeGenerator(){
         </div>
         <button
             onClick={generateChallenge}
-            disabled={isLoading || quota?.quota_remaining === 0}
-            className={styles.generateButton}
+            disabled={false}
+            className="generate-button"
         >{isLoading ? "Generating..." : "Generate Challenge"}
         </button>
 
-        {error && <div className={styles.errorMessage} >
+        {error && <div className="error-message" >
             <p>{error}</p>
         </div>}
         {challenge && <MCQChallenge challenge={challenge}/>}
