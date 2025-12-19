@@ -84,7 +84,12 @@ export default function ChallengeGenerator(){
         {error && <div className="error-message" >
             <p>{error}</p>
         </div>}
-        {challenge && <MCQChallenge challenge={challenge}/>}
+        {challenge && (
+          <MCQChallenge
+            key={challenge.id || challenge.title || Date.now()}
+            challenge={challenge}
+          />
+        )}
 
     </div>
 }
