@@ -10,7 +10,7 @@ load_dotenv()
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-def generate_challenge_with_ai(difficulty: str) -> dict[str, any]:
+def generate_challenge_with_ai(difficulty: str) -> dict[str, Any]:
     system_prompt = f"""
     You are an expert coding challenge creator. 
     Your task is to generate a **unique** coding question with multiple choice answers.
